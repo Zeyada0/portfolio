@@ -4,3 +4,5 @@ html,body,#root{margin:0;min-height:100%}body{background:#faf6ee;transition:back
 .pf-js .pf-projects .pf-section-head.is-in .pf-cat-btn:nth-of-type(3) .pf-cat-sheen{animation:pf-cat-sheen .55s ease-in-out 1.84s}
 .pf-soon{margin-top:18px;padding:48px 20px;text-align:center;border-radius:22px;border:1px dashed #bd9a5980;color:var(--mute);font-weight:600;background:var(--card)}
 .pf-js[dir=rtl] .pf-projects .pf-section-head.is-in .pf-cat-btn:nth-of-type(3){animation-name:pf-cat-in-l}
+.pf-cat-btn{background:linear-gradient(135deg,#fffffff2,#f3e8cfcc);border-color:#bd9a5973;box-shadow:inset 0 1px #ffffffe6,0 6px 16px #bd9a5933}
+.pf-cat-btn[aria-pressed=true]{background:transparent;border-color:transparent;box-shadow:none}
