@@ -99,8 +99,11 @@ code{background:rgba(255,255,255,.1);padding:1px 6px;border-radius:6px;direction
     <div class="thumbs" id="pPrev"></div>
     <label>المهارات المستخدمة <small>افصل بينهم بفاصلة</small></label><input type="text" id="pSkills" required placeholder="DAX, Power Query, Data Modeling">
     <label>وصف قصير <small>Short description (اختياري)</small></label><textarea id="pDesc" style="min-height:70px"></textarea>
+    <label>🇪🇬 الوصف بالعربي <small>اختياري، بيظهر لما الموقع يبقى عربي</small></label><textarea id="pDescAr" dir="rtl" style="min-height:70px"></textarea>
     <label>الـ Insights <small>كل سطر نقطة</small></label><textarea id="pInsights" required placeholder="Classic Cars lead with 39% of sales&#10;Medium deals are 60% of all orders"></textarea>
+    <label>🇪🇬 الـ Insights بالعربي <small>اختياري، نفس الترتيب، كل سطر مقابل السطر الإنجليزي</small></label><textarea id="pInsightsAr" dir="rtl"></textarea>
     <label>اللي استفدناه من الداشبورد <small>What we learned (بيظهر في خانة IMPACT)</small></label><textarea id="pLearned" required></textarea>
+    <label>🇪🇬 اللي استفدناه بالعربي <small>اختياري</small></label><textarea id="pLearnedAr" dir="rtl"></textarea>
     <label>أرقام رئيسية <small>KPIs (اختياري، لحد 4)</small></label>
     <div id="kpis"></div>
     <label>لينك LinkedIn <small>(اختياري)</small></label><input type="url" id="pLi" placeholder="https://...">
@@ -201,6 +204,7 @@ $('fProj').onsubmit=async e=>{e.preventDefault();const b=e.submitter;
       linkedin:$('pLi').value.trim(),github:$('pGh').value.trim(),shots};
     if(tool==='Excel')item.category='excel';if(tool==='Tableau')item.category='tableau';
     c.projects=(c.projects||[]).concat(item);
+    c.site=c.site||{};const ad=c.site.ar=c.site.ar||{};const pr=(en,ar)=>{if(en&&ar)ad[en]=ar};pr(item.summary,$('pDescAr').value.trim());pr(item.impact,$('pLearnedAr').value.trim());const al=lines($('pInsightsAr').value);item.highlights.forEach((x,i)=>pr(x,al[i]));
     await commit(files,c,'Add project: '+title);
     e.target.reset();pFiles=[];renderP();done('المشروع اتضاف: '+title+' (تحت تاب '+tool+')');
   }catch(x){fail(x)}b.disabled=false};
@@ -225,7 +229,10 @@ function ask(title,fields,vals){return new Promise(res=>{
     html+='<label>'+esc(f.l)+(f.h?' <small>'+esc(f.h)+'</small>':'')+'</label>';
     if(f.t==='area'||f.t==='lines'||f.t==='paras'||f.t==='kpis')html+='<textarea data-i="'+i+'" style="min-height:'+(f.t==='paras'?220:90)+'px">'+esc(s)+'</textarea>';
     else if(f.t==='select')html+='<select data-i="'+i+'">'+f.o.map(x=>'<option'+(String(x)===String(v)?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select>';
-    else html+='<input type="text" data-i="'+i+'" value="'+esc(s)+'">'});
+    else html+='<input type="text" data-i="'+i+'" value="'+esc(s)+'">';
+    if(f.ar){const sep=f.t==='paras'?'\n\n':'\n';const lab=f.t==='kpis'?(v||[]).map(m=>ARD[m.label]||''):Array.isArray(v)?v.map(x=>ARD[x]||''):[ARD[v]||''];
+      html+='<label>🇪🇬 بالعربي <small>'+(f.t==='lines'?'نفس الترتيب، كل سطر مقابل السطر الإنجليزي':f.t==='paras'?'نفس ترتيب الفقرات':f.t==='kpis'?'الاسم بس، كل سطر مقابل الإنجليزي':'اختياري')+'</small></label>';
+      const ta=f.t!=='text';html+=(ta?'<textarea dir="rtl" data-a="'+i+'" style="min-height:'+(f.t==='paras'?200:80)+'px">':'<input type="text" dir="rtl" data-a="'+i+'" value="')+esc(lab.join(sep))+(ta?'</textarea>':'">')}});
   html+='<div class="row" style="margin-top:16px"><button class="btn primary" style="margin:0" id="okB">حفظ</button><button class="btn" id="noB">إلغاء</button></div>';
   b.innerHTML=html;document.body.appendChild(o);
   b.querySelector('#noB').onclick=()=>{o.remove();res(null)};
@@ -234,16 +241,24 @@ function ask(title,fields,vals){return new Promise(res=>{
     else if(f.t==='csv')v=v.split(/[,،]/).map(x=>x.trim()).filter(Boolean);
     else if(f.t==='paras')v=v.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
     else if(f.t==='kpis')v=v.split('\n').map(x=>x.split('|').map(y=>y.trim())).filter(a=>a[0]&&a[1]).map(a=>({value:a[0],label:a[1]}));
-    else v=v.trim();out[f.k]=v});o.remove();res(out)};
+    else v=v.trim();out[f.k]=v;if(f.ar){const e=b.querySelector('[data-a="'+i+'"]');let a=e.value;if(f.t==='lines'||f.t==='kpis')a=a.split('\n').map(x=>x.trim());else if(f.t==='paras')a=a.split(/\n\s*\n/).map(x=>x.trim());else a=a.trim();out[f.k+'__ar']=a}});o.remove();res(out)};
 })}
 function eff(list,order,ed){const idx=p=>{const i=(order||[]).indexOf(p.id);return i<0?1e6:i};return list.map((p,i)=>[{...p,...(ed[p.id]||{})},i]).sort((a,b)=>idx(a[0])-idx(b[0])||a[1]-b[1]).map(x=>x[0])}
 const grp=p=>p.tool||'Power BI';
+let ARD={};
+function applyAr(c,fields,v){c.site=c.site||{};const d=c.site.ar=c.site.ar||{};
+  const put=(en,ar)=>{if(!en)return;if(ar)d[en]=ar;else delete d[en]};
+  fields.forEach(f=>{if(!f.ar)return;const a=v[f.k+'__ar'],en=v[f.k];
+    if(f.t==='kpis')(en||[]).forEach((m,i)=>put(m.label,(a||[])[i]));
+    else if(Array.isArray(en))en.forEach((x,i)=>put(x,(a||[])[i]));
+    else put(en,a)})}
+function cleanV(v){const o={};for(const k in v)if(!k.endsWith('__ar'))o[k]=v[k];return o}
 async function renderMg(){
   const box=$('mg');box.innerHTML='<div class="status">⏳ بحمّل...</div>';
   try{
     if(!BASE)BASE=await (await fetch('./base.json?'+Date.now(),{cache:'no-store'})).json();
     const c=await getContent();const S=c.site||{};const ed=S.edits||{},hid=S.hidden||[];
-    const prof={...BASE.profile,...(S.profile||{})};
+    const prof={...BASE.profile,...(S.profile||{})};ARD={...BASE.ar,...(S.ar||{})};
     const tools=S.tools&&S.tools.length?S.tools:BASE.tools;
     const projs=eff([...BASE.projects,...(c.projects||[])],(S.order||{}).projects,ed);
     const certs=eff([...BASE.certs,...(c.certs||[])],(S.order||{}).certs,ed);
@@ -252,46 +267,46 @@ async function renderMg(){
     const btn=(txt,fn,cls)=>{const b=document.createElement('button');b.className='btn ghost '+(cls||'');b.textContent=txt;b.onclick=async()=>{b.disabled=true;try{await fn();say('✅ اتحفظ. هيظهر على الموقع بعد دقيقة أو اتنين.','ok');show('status',true);renderMg()}catch(e){fail(e);show('status',true);b.disabled=false}};return b};
     // profile
     let d=card('👤 البيانات الأساسية والـ About');
-    d.appendChild(btn('تعديل',async()=>{const v=await ask('البيانات الأساسية',[{k:'name',l:'الاسم'},{k:'title',l:'المسمى الوظيفي'},{k:'tagline',l:'الجملة تحت الاسم'},{k:'about',l:'نص About',h:'سطر فاضي بين كل فقرة',t:'paras'},{k:'location',l:'البلد'},{k:'email',l:'الإيميل'},{k:'phone',l:'الرقم'},{k:'whatsapp',l:'لينك واتساب'},{k:'linkedin',l:'لينك LinkedIn'},{k:'github',l:'لينك GitHub'}],prof);if(!v)throw new Error('تم الإلغاء');await saveSite(c=>{c.site.profile=v},'Edit profile')}));
+    d.appendChild(btn('تعديل',async()=>{const PF=[{k:'name',l:'الاسم'},{k:'title',l:'المسمى الوظيفي',ar:true},{k:'tagline',l:'الجملة تحت الاسم',ar:true},{k:'about',l:'نص About',h:'سطر فاضي بين كل فقرة',t:'paras',ar:true},{k:'location',l:'البلد'},{k:'email',l:'الإيميل'},{k:'phone',l:'الرقم'},{k:'whatsapp',l:'لينك واتساب'},{k:'linkedin',l:'لينك LinkedIn'},{k:'github',l:'لينك GitHub'}];const v=await ask('البيانات الأساسية',PF,prof);if(!v)throw new Error('تم الإلغاء');const fl=PF;await saveSite(c=>{applyAr(c,fl,v);c.site.profile=cleanV(v)},'Edit profile')}));
     // hero badges + learning + counters
     d=card('🏷️ الـ Open to work وكارت Learning والعدادات');
-    d.appendChild(btn('تعديل',async()=>{const L=S.learning||{},C=S.counters||{};const v=await ask('البادج والعدادات',[
-      {k:'otw',l:'بادج Open to work',t:'select',o:['ظاهر','مخفي']},{k:'otwText',l:'نص البادج',h:'اتركه فاضي = Open to work'},
-      {k:'lhide',l:'كارت "Currently learning"',t:'select',o:['ظاهر','مخفي']},{k:'ltitle',l:'عنوان الكارت',h:'فاضي = Currently learning: Python'},{k:'lsub',l:'السطر الصغير تحته',h:'فاضي = الافتراضي'},
-      {k:'cd',l:'عداد Dashboards',h:'فاضي = تلقائي (عدد الصفحات)'},{k:'cp',l:'عداد Projects',h:'فاضي = تلقائي'}],
+    d.appendChild(btn('تعديل',async()=>{const L=S.learning||{},C=S.counters||{};const BF=[
+      {k:'otw',l:'بادج Open to work',t:'select',o:['ظاهر','مخفي']},{k:'otwText',l:'نص البادج',h:'اتركه فاضي = Open to work',ar:true},
+      {k:'lhide',l:'كارت "Currently learning"',t:'select',o:['ظاهر','مخفي']},{k:'ltitle',l:'عنوان الكارت',h:'فاضي = Currently learning: Python',ar:true},{k:'lsub',l:'السطر الصغير تحته',h:'فاضي = الافتراضي',ar:true},
+      {k:'cd',l:'عداد Dashboards',h:'فاضي = تلقائي (عدد الصفحات)'},{k:'cp',l:'عداد Projects',h:'فاضي = تلقائي'}];const v=await ask('البادج والعدادات',BF,
       {otw:S.otw===false?'مخفي':'ظاهر',otwText:S.otwText||'',lhide:L.hide?'مخفي':'ظاهر',ltitle:L.title||'',lsub:L.sub||'',cd:C.dashboards||'',cp:C.projects||''});
       if(!v)throw new Error('تم الإلغاء');
-      await saveSite(c=>{c.site.otw=v.otw!=='مخفي';c.site.otwText=v.otwText;c.site.learning={hide:v.lhide==='مخفي',title:v.ltitle,sub:v.lsub};c.site.counters={dashboards:parseInt(v.cd)||0,projects:parseInt(v.cp)||0}},'Edit badges and counters')}));
+      await saveSite(c=>{applyAr(c,BF,{...v,otwText:v.otwText||'Open to work',ltitle:v.ltitle||'Currently learning: Python',lsub:v.lsub||'The certificate will be added here once earned.'});c.site.otw=v.otw!=='مخفي';c.site.otwText=v.otwText;c.site.learning={hide:v.lhide==='مخفي',title:v.ltitle,sub:v.lsub};c.site.counters={dashboards:parseInt(v.cd)||0,projects:parseInt(v.cp)||0}},'Edit badges and counters')}));
     // CV
     d=card('📄 الـ CV (Download CV)');
     d.insertAdjacentHTML('beforeend','<div class="hint">اختار ملف PDF جديد، وبيستبدل الـ CV اللي بيتحمل من الموقع (نفس اللينك).</div><input type="file" accept="application/pdf" id="cvf">');
     d.appendChild(btn('رفع الـ CV',async()=>{const f=$('cvf').files[0];if(!f)throw new Error('اختار ملف PDF الأول');if(f.size>20e6)throw new Error('الملف كبير');const b64=await new Promise((r,j)=>{const fr=new FileReader();fr.onload=()=>r(fr.result.split(',')[1]);fr.onerror=j;fr.readAsDataURL(f)});const c=await getContent();await commit([{path:'Zeyad_Ashraf_CV.pdf',b64}],c,'Update CV')}));
     // skills
     d=card('🧰 كروت المهارات (Technical Expertise)');
-    const tf=[{k:'name',l:'الاسم'},{k:'sub',l:'العنوان الفرعي'},{k:'icon',l:'الأيقونة',t:'select',o:['excel','sql','python','bi','tableau']},{k:'desc',l:'الوصف',t:'area'},{k:'chips',l:'المهارات الصغيرة',h:'افصل بفاصلة',t:'csv'}];
-    const saveTools=(arr)=>saveSite(c=>{c.site.tools=arr},'Edit skills');
+    const tf=[{k:'name',l:'الاسم'},{k:'sub',l:'العنوان الفرعي',ar:true},{k:'icon',l:'الأيقونة',t:'select',o:['excel','sql','python','bi','tableau']},{k:'desc',l:'الوصف',t:'area',ar:true},{k:'chips',l:'المهارات الصغيرة',h:'افصل بفاصلة',t:'csv'}];
+    const saveTools=(arr,v)=>saveSite(c=>{if(v)applyAr(c,tf,v);c.site.tools=arr},'Edit skills');
     tools.forEach((t,i)=>{const r=document.createElement('div');r.className='item';r.innerHTML='<span>'+esc(t.name)+'</span>';const g=document.createElement('div');g.className='row2';
       g.append(btn('↑',()=>{if(i===0)throw new Error('أول واحد');const a=tools.slice();[a[i-1],a[i]]=[a[i],a[i-1]];return saveTools(a)}),btn('↓',()=>{if(i===tools.length-1)throw new Error('آخر واحد');const a=tools.slice();[a[i+1],a[i]]=[a[i],a[i+1]];return saveTools(a)}),
-        btn('تعديل',async()=>{const v=await ask('تعديل '+t.name,tf,t);if(!v)throw new Error('تم الإلغاء');const a=tools.slice();a[i]={...t,...v};return saveTools(a)}),
+        btn('تعديل',async()=>{const v=await ask('تعديل '+t.name,tf,t);if(!v)throw new Error('تم الإلغاء');const a=tools.slice();a[i]={...t,...cleanV(v)};return saveTools(a,v)}),
         btn('حذف',async()=>{if(!confirm('تحذف '+t.name+'؟'))throw new Error('تم الإلغاء');return saveTools(tools.filter((_,j)=>j!==i))}));r.appendChild(g);d.appendChild(r)});
-    d.appendChild(btn('➕ كارت جديد',async()=>{const v=await ask('كارت مهارة جديد',tf,{icon:'bi'});if(!v||!v.name)throw new Error('تم الإلغاء');return saveTools([...tools,v])}));
+    d.appendChild(btn('➕ كارت جديد',async()=>{const v=await ask('كارت مهارة جديد',tf,{icon:'bi'});if(!v||!v.name)throw new Error('تم الإلغاء');return saveTools([...tools,cleanV(v)],v)}));
     // projects
     d=card('📊 المشاريع (ترتيب / تعديل / إخفاء)');
     const moveIn=(list,i,dir,key)=>{const g=x=>key==='p'?grp(x):'c';let j=i+dir;while(j>=0&&j<list.length&&g(list[j])!==g(list[i]))j+=dir;if(j<0||j>=list.length)throw new Error('مفيش مكان تتحرك ليه');const ids=list.map(x=>x.id);[ids[i],ids[j]]=[ids[j],ids[i]];return ids};
-    const pf=[{k:'title',l:'الاسم'},{k:'tool',l:'الأداة',t:'select',o:['Power BI','Excel','Tableau']},{k:'pages',l:'الصفحات',h:'مثال: 3 pages'},{k:'summary',l:'الوصف',t:'area'},{k:'highlights',l:'Insights',h:'كل سطر نقطة',t:'lines'},{k:'impact',l:'اللي استفدناه (IMPACT)',t:'area'},{k:'tags',l:'المهارات',h:'افصل بفاصلة',t:'csv'},{k:'metrics',l:'الأرقام الرئيسية',h:'كل سطر: القيمة | الاسم',t:'kpis'},{k:'linkedin',l:'لينك LinkedIn'},{k:'github',l:'لينك GitHub'},{k:'theme',l:'اللون',t:'select',o:['navy','gold','teal','sport']}];
+    const pf=[{k:'title',l:'الاسم'},{k:'tool',l:'الأداة',t:'select',o:['Power BI','Excel','Tableau']},{k:'pages',l:'الصفحات',h:'مثال: 3 pages'},{k:'summary',l:'الوصف',t:'area',ar:true},{k:'highlights',l:'Insights',h:'كل سطر نقطة',t:'lines',ar:true},{k:'impact',l:'اللي استفدناه (IMPACT)',t:'area',ar:true},{k:'tags',l:'المهارات',h:'افصل بفاصلة',t:'csv'},{k:'metrics',l:'الأرقام الرئيسية',h:'كل سطر: القيمة | الاسم',t:'kpis',ar:true},{k:'linkedin',l:'لينك LinkedIn'},{k:'github',l:'لينك GitHub'},{k:'theme',l:'اللون',t:'select',o:['navy','gold','teal','sport']}];
     ['Power BI','Excel','Tableau'].forEach(gn=>{
       const sub=document.createElement('div');sub.className='hint';sub.textContent=gn;d.appendChild(sub);
       projs.forEach((p,i)=>{if(grp(p)!==gn)return;const isHid=hid.includes(p.id);const r=document.createElement('div');r.className='item'+(isHid?' dim':'');r.innerHTML='<span>'+esc(p.title)+(isHid?' (مخفي)':'')+'</span>';const g=document.createElement('div');g.className='row2';
         g.append(btn('↑',()=>{const ids=moveIn(projs,i,-1,'p');return saveSite(c=>{c.site.order.projects=ids},'Reorder projects')}),btn('↓',()=>{const ids=moveIn(projs,i,1,'p');return saveSite(c=>{c.site.order.projects=ids},'Reorder projects')}),
-          btn('تعديل',async()=>{const v=await ask('تعديل '+p.title,pf,{...p,theme:p.theme||'navy'});if(!v)throw new Error('تم الإلغاء');return saveSite(c=>{c.site.edits[p.id]={...(c.site.edits[p.id]||{}),...v}},'Edit project '+p.title)}),
+          btn('تعديل',async()=>{const v=await ask('تعديل '+p.title,pf,{...p,theme:p.theme||'navy'});if(!v)throw new Error('تم الإلغاء');return saveSite(c=>{applyAr(c,pf,v);c.site.edits[p.id]={...(c.site.edits[p.id]||{}),...cleanV(v)}},'Edit project '+p.title)}),
           btn(isHid?'إظهار':'إخفاء',()=>saveSite(c=>{c.site.hidden=isHid?c.site.hidden.filter(x=>x!==p.id):[...c.site.hidden,p.id]},(isHid?'Show ':'Hide ')+p.title)));
         r.appendChild(g);d.appendChild(r)})});
     // certs
     d=card('🎓 الشهادات (ترتيب / تعديل / إخفاء)');
-    const cf=[{k:'name',l:'الاسم'},{k:'issuer',l:'الجهة'},{k:'issued',l:'التاريخ',h:'مثال: Nov 2026'},{k:'verify',l:'لينك التحقق'},{k:'note',l:'ملاحظة (بتخلي الشهادة Featured)'}];
+    const cf=[{k:'name',l:'الاسم'},{k:'issuer',l:'الجهة'},{k:'issued',l:'التاريخ',h:'مثال: Nov 2026'},{k:'verify',l:'لينك التحقق'},{k:'note',l:'ملاحظة (بتخلي الشهادة Featured)',ar:true}];
     certs.forEach((p,i)=>{const isHid=hid.includes(p.id);const r=document.createElement('div');r.className='item'+(isHid?' dim':'');r.innerHTML='<span>'+esc(p.name)+(isHid?' (مخفي)':'')+'</span>';const g=document.createElement('div');g.className='row2';
       g.append(btn('↑',()=>{const ids=moveIn(certs,i,-1,'c');return saveSite(c=>{c.site.order.certs=ids},'Reorder certificates')}),btn('↓',()=>{const ids=moveIn(certs,i,1,'c');return saveSite(c=>{c.site.order.certs=ids},'Reorder certificates')}),
-        btn('تعديل',async()=>{const v=await ask('تعديل '+p.name,cf,p);if(!v)throw new Error('تم الإلغاء');return saveSite(c=>{c.site.edits[p.id]={...(c.site.edits[p.id]||{}),...v}},'Edit certificate '+p.name)}),
+        btn('تعديل',async()=>{const v=await ask('تعديل '+p.name,cf,p);if(!v)throw new Error('تم الإلغاء');return saveSite(c=>{applyAr(c,cf,v);c.site.edits[p.id]={...(c.site.edits[p.id]||{}),...cleanV(v)}},'Edit certificate '+p.name)}),
         btn(isHid?'إظهار':'إخفاء',()=>saveSite(c=>{c.site.hidden=isHid?c.site.hidden.filter(x=>x!==p.id):[...c.site.hidden,p.id]},'Toggle certificate '+p.name)));
       r.appendChild(g);d.appendChild(r)});
     const hint=document.createElement('div');hint.className='hint';hint.textContent='ملاحظة: النصوص اللي بتعدلها بتظهر زي ما كتبتها حتى في وضع العربي (مفيش ترجمة تلقائية).';box.appendChild(hint);
