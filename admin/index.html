@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0f2540">
+<title>Portfolio Manager</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+<style>
+:root{--navy:#0f2540;--navy2:#1b3a5f;--gold:#b8935a;--gold2:#d9bd8a;--cream:#f6f0e4;--line:rgba(217,189,138,.28)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Cairo,system-ui,sans-serif;color:var(--cream);background:radial-gradient(1200px 600px at 80% -10%,#1b3a5f 0,transparent 60%),var(--navy);min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:28px 18px 80px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--navy);border:1px solid var(--gold);display:grid;place-items:center;font:700 18px Georgia,serif;color:var(--gold2);letter-spacing:1px}
+h1{font-size:22px;margin:0}h1 small{display:block;font-size:13px;color:var(--gold2);font-weight:400}
+.card{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:18px;padding:20px;backdrop-filter:blur(10px);margin-bottom:16px}
+label{display:block;font-weight:600;margin:14px 0 6px;font-size:15px}
+label small{color:var(--gold2);font-weight:400}
+input[type=text],input[type=url],input[type=password],input[type=month],textarea,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(7,20,38,.7);color:var(--cream);font:inherit;font-size:16px}
+textarea{min-height:96px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg button,.btn{font:inherit;font-weight:700;border-radius:14px;border:1px solid var(--line);padding:14px;color:var(--cream);background:rgba(255,255,255,.06);cursor:pointer;transition:.2s}
+.seg button.on{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);border-color:transparent}
+.btn.primary{width:100%;margin-top:20px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);border:0;font-size:17px}
+.btn.primary:disabled{opacity:.5}
+.btn.ghost{padding:8px 12px;font-size:13px}
+.hint{font-size:13px;color:#cdbf9f;margin-top:6px;line-height:1.7}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.thumb{background:rgba(7,20,38,.6);border:1px solid var(--line);border-radius:12px;padding:8px}
+.thumb img{width:100%;height:90px;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px}
+.thumb input{font-size:13px;padding:7px 9px}
+.thumb button{margin-top:6px;width:100%}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-bottom:8px}
+.status{margin-top:16px;padding:14px;border-radius:12px;background:rgba(7,20,38,.7);border:1px solid var(--line);line-height:1.8;font-size:15px}
+.ok{border-color:#6fcf97}.err{border-color:#eb5757}
+.hidden{display:none}
+.item{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}
+.item span{font-size:14px}
+a{color:var(--gold2)}
+ol{padding-inline-start:20px;line-height:2;font-size:15px}
+code{background:rgba(255,255,255,.1);padding:1px 6px;border-radius:6px;direction:ltr;unicode-bidi:embed}
+</style></head><body><div class="wrap">
+<header><div class="logo">ZA</div><h1>إدارة البورتفوليو<small>Add certificates and projects</small></h1></header>
+
+<div id="setup" class="card hidden">
+  <b>أول مرة بس: ربط الصفحة بحسابك</b>
+  <ol>
+    <li>افتح <a target="_blank" rel="noopener" href="https://github.com/settings/personal-access-tokens/new">GitHub → Fine-grained token</a></li>
+    <li>Token name: <code>portfolio</code> · Expiration: 1 year</li>
+    <li>Repository access: <b>Only select repositories</b> ثم اختار <code>portfolio</code></li>
+    <li>Permissions → Repository permissions → <b>Contents: Read and write</b></li>
+    <li>Generate token وانسخه، وحطه تحت</li>
+  </ol>
+  <input id="tok" type="password" placeholder="github_pat_..." autocomplete="off">
+  <div class="hint">التوكن بيتحفظ على جهازك بس (في المتصفح) ومبيتبعتش لأي مكان غير GitHub.</div>
+  <button class="btn primary" id="saveTok">حفظ ومتابعة</button>
+  <div id="tokErr" class="status err hidden"></div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="card">
+    <label style="margin-top:0">نوع العرض</label>
+    <div class="seg"><button id="tCert">🎓 Certificate</button><button id="tProj">📊 Project</button></div>
+  </div>
+
+  <form id="fCert" class="card hidden">
+    <label>اسم الشهادة <small>Name</small></label><input type="text" id="cName" required placeholder="Python for Data Analysis">
+    <label>الجهة المانحة <small>Issuer</small></label><input type="text" id="cIssuer" required placeholder="Mazen Analytics">
+    <label>أخدتها امتى <small>Date earned</small></label><input type="month" id="cDate" required>
+    <label>لينك التحقق <small>Verification link (اختياري)</small></label><input type="url" id="cVerify" placeholder="https://...">
+    <label>ملاحظة <small>Optional, مثال: Diploma of Professional Achievement (بتخلي الشهادة Featured ★)</small></label><input type="text" id="cNote">
+    <label>صورة الشهادة</label><input type="file" id="cImg" accept="image/*" required>
+    <div class="thumbs" id="cPrev"></div>
+    <button class="btn primary" type="submit">OK، نزّلها في البورتفوليو</button>
+  </form>
+
+  <form id="fProj" class="card hidden">
+    <label>اسم المشروع <small>Title</small></label><input type="text" id="pTitle" required placeholder="Sales Dashboard">
+    <div class="row">
+      <div><label>الأداة <small>Tool</small></label><select id="pTool"><option>Power BI</option><option>Excel</option><option>Tableau</option></select></div>
+      <div><label>عدد الصفحات <small>Pages</small></label><input type="text" id="pPages" inputmode="numeric" value="1"></div>
+    </div>
+    <label>صور الداشبورد <small>أي عدد، ممكن تختار كذا صورة مرة واحدة</small></label>
+    <input type="file" id="pImgs" accept="image/*" multiple>
+    <div class="thumbs" id="pPrev"></div>
+    <label>المهارات المستخدمة <small>افصل بينهم بفاصلة</small></label><input type="text" id="pSkills" required placeholder="DAX, Power Query, Data Modeling">
+    <label>وصف قصير <small>Short description (اختياري)</small></label><textarea id="pDesc" style="min-height:70px"></textarea>
+    <label>الـ Insights <small>كل سطر نقطة</small></label><textarea id="pInsights" required placeholder="Classic Cars lead with 39% of sales&#10;Medium deals are 60% of all orders"></textarea>
+    <label>اللي استفدناه من الداشبورد <small>What we learned (بيظهر في خانة IMPACT)</small></label><textarea id="pLearned" required></textarea>
+    <label>أرقام رئيسية <small>KPIs (اختياري، لحد 4)</small></label>
+    <div id="kpis"></div>
+    <label>لينك LinkedIn <small>(اختياري)</small></label><input type="url" id="pLi" placeholder="https://...">
+    <label>لينك GitHub <small>(اختياري، تقدر تحط الاتنين)</small></label><input type="url" id="pGh" placeholder="https://github.com/...">
+    <label>لون الكارت <small>Theme</small></label>
+    <select id="pTheme"><option value="">تلقائي</option><option value="navy">Navy</option><option value="gold">Gold</option><option value="teal">Teal</option><option value="sport">Sport</option></select>
+    <button class="btn primary" type="submit">OK، نزّله في البورتفوليو</button>
+  </form>
+
+  <div id="status" class="status hidden"></div>
+
+  <div class="card" id="manage">
+    <b>اللي ضفته من هنا</b>
+    <div id="added"><div class="hint">لسه مفيش.</div></div>
+  </div>
+  <div class="hint"><a href="#" id="logout">تسجيل الخروج / تغيير التوكن</a> · <a href="../" target="_blank">فتح البورتفوليو</a></div>
+</div>
+
+<script>
+const OWNER='Zeyada0',REPO='portfolio',BR='main',API='https://api.github.com/repos/'+OWNER+'/'+REPO;
+const $=id=>document.getElementById(id);
+let TOKEN=localStorage.getItem('pf_token')||'';
+const H=()=>({Authorization:'Bearer '+TOKEN,Accept:'application/vnd.github+json'});
+async function gh(path,opt={}){
+  const r=await fetch(API+path,{...opt,headers:{...H(),'Content-Type':'application/json',...(opt.headers||{})}});
+  if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){};const e=new Error(m||r.status);e.status=r.status;throw e}
+  return r.status===204?null:r.json();
+}
+function show(el,on){$(el).classList.toggle('hidden',!on)}
+function say(msg,cls){const s=$('status');s.className='status '+(cls||'');s.innerHTML=msg}
+async function boot(){
+  if(!TOKEN){show('setup',true);show('app',false);return}
+  try{await gh('');show('setup',false);show('app',true);loadAdded()}
+  catch(e){TOKEN='';localStorage.removeItem('pf_token');show('app',false);show('setup',true);$('tokErr').textContent='التوكن مش شغال أو مش واخد صلاحية على ريبو portfolio ('+e.message+')';show('tokErr',true)}
+}
+$('saveTok').onclick=()=>{TOKEN=$('tok').value.trim();if(!TOKEN)return;localStorage.setItem('pf_token',TOKEN);boot()};
+$('logout').onclick=e=>{e.preventDefault();localStorage.removeItem('pf_token');TOKEN='';location.reload()};
+let kind='';
+function pick(k){kind=k;$('tCert').classList.toggle('on',k==='c');$('tProj').classList.toggle('on',k==='p');show('fCert',k==='c');show('fProj',k==='p');show('status',false)}
+$('tCert').onclick=()=>pick('c');$('tProj').onclick=()=>pick('p');
+for(let i=0;i<4;i++){const d=document.createElement('div');d.className='kpi';d.innerHTML='<input type="text" placeholder="القيمة 4.6M" class="kv"><input type="text" placeholder="الاسم Total sales" class="kl">';$('kpis').appendChild(d)}
+
+// image helpers
+function loadImg(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file);const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=u})}
+async function toJpegB64(file,max=2400){
+  const img=await loadImg(file);let w=img.naturalWidth,h=img.naturalHeight;const k=Math.min(1,max/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(img,0,0,w,h);
+  return c.toDataURL('image/jpeg',.9).split(',')[1];
+}
+const slug=s=>(s||'item').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,30)||'item';
+const rid=()=>Math.random().toString(36).slice(2,8);
+let pFiles=[];
+$('cImg').onchange=async e=>{const f=e.target.files[0];$('cPrev').innerHTML='';if(!f)return;const t=document.createElement('div');t.className='thumb';t.innerHTML='<img src="'+URL.createObjectURL(f)+'">';$('cPrev').appendChild(t)};
+$('pImgs').onchange=e=>{for(const f of e.target.files)pFiles.push({file:f,label:''});e.target.value='';renderP()};
+function renderP(){const box=$('pPrev');box.innerHTML='';pFiles.forEach((o,i)=>{const t=document.createElement('div');t.className='thumb';const im=document.createElement('img');im.src=o.url||(o.url=URL.createObjectURL(o.file));const inp=document.createElement('input');inp.type='text';inp.placeholder=pFiles.length>1?'Page '+(i+1):'Dashboard';inp.value=o.label;inp.oninput=()=>o.label=inp.value;const b=document.createElement('button');b.type='button';b.className='btn ghost';b.textContent='مسح';b.onclick=()=>{pFiles.splice(i,1);renderP()};t.append(im,inp,b);box.appendChild(t)})}
+
+async function getContent(){
+  try{const r=await gh('/contents/content.json?ref='+BR);const txt=decodeURIComponent(escape(atob(r.content.replace(/\n/g,''))));return JSON.parse(txt)}
+  catch(e){if(e.status===404)return{projects:[],certs:[]};throw e}
+}
+async function commit(files,content,msg){
+  // files: [{path,b64}]; one atomic commit with images + content.json
+  const ref=await gh('/git/ref/heads/'+BR);const head=ref.object.sha;
+  const hc=await gh('/git/commits/'+head);
+  const tree=[];
+  for(const f of files){const b=await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:f.b64,encoding:'base64'})});tree.push({path:f.path,mode:'100644',type:'blob',sha:b.sha})}
+  tree.push({path:'content.json',mode:'100644',type:'blob',content:JSON.stringify(content,null,2)+'\n'});
+  const nt=await gh('/git/trees',{method:'POST',body:JSON.stringify({base_tree:hc.tree.sha,tree})});
+  const nc=await gh('/git/commits',{method:'POST',body:JSON.stringify({message:msg,tree:nt.sha,parents:[head]})});
+  await gh('/git/refs/heads/'+BR,{method:'PATCH',body:JSON.stringify({sha:nc.sha})});
+}
+function done(msg){say('✅ '+msg+'<br>هيظهر على البورتفوليو خلال دقيقة أو اتنين. لو ما ظهرش اعمل refresh.','ok');loadAdded()}
+function fail(e){say('❌ حصلت مشكلة: '+(e.message||e)+'<br>جرب تاني، ولو اتكررت ابعتلي الرسالة دي.','err')}
+$('fCert').onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;say('⏳ بجهز الصورة وبرفع...');
+  try{
+    const f=$('cImg').files[0];const b64=await toJpegB64(f,2000);const path='uploads/cert-'+slug($('cName').value)+'-'+rid()+'.jpg';
+    const c=await getContent();
+    const d=new Date($('cDate').value+'-01');const issued=d.toLocaleString('en-US',{month:'short',year:'numeric',timeZone:'UTC'});
+    const item={id:'c-'+rid(),name:$('cName').value.trim(),issuer:$('cIssuer').value.trim(),issued,img:path};
+    if($('cVerify').value.trim())item.verify=$('cVerify').value.trim();
+    if($('cNote').value.trim())item.note=$('cNote').value.trim();
+    c.certs=(c.certs||[]).concat(item);
+    await commit([{path,b64}],c,'Add certificate: '+item.name);
+    e.target.reset();$('cPrev').innerHTML='';done('الشهادة اتضافت: '+item.name);
+  }catch(x){fail(x)}b.disabled=false};
+$('fProj').onsubmit=async e=>{e.preventDefault();const b=e.submitter;
+  if(!pFiles.length){say('❌ لازم تختار صورة واحدة على الأقل.','err');return}
+  b.disabled=true;say('⏳ بجهز الصور وبرفع...');
+  try{
+    const title=$('pTitle').value.trim(),files=[],shots=[];
+    for(let i=0;i<pFiles.length;i++){const b64=await toJpegB64(pFiles[i].file,2400);const path='uploads/'+slug(title)+'-'+(i+1)+'-'+rid()+'.jpg';files.push({path,b64});shots.push({src:path,label:pFiles[i].label.trim()||(pFiles.length>1?'Page '+(i+1):'Dashboard')})}
+    const c=await getContent();const tool=$('pTool').value;
+    const lines=t=>t.split('\n').map(x=>x.trim()).filter(Boolean);
+    const metrics=[...document.querySelectorAll('.kpi')].map(r=>({value:r.querySelector('.kv').value.trim(),label:r.querySelector('.kl').value.trim()})).filter(m=>m.value&&m.label);
+    const pages=parseInt($('pPages').value)||1;
+    const item={id:'p-'+slug(title)+'-'+rid(),title,tool,pages:pages+(pages===1?' page':' pages'),theme:$('pTheme').value||(tool==='Tableau'?'gold':'navy'),
+      tags:$('pSkills').value.split(/[,،]/).map(x=>x.trim()).filter(Boolean),summary:$('pDesc').value.trim(),highlights:lines($('pInsights').value),impact:$('pLearned').value.trim(),metrics,
+      linkedin:$('pLi').value.trim(),github:$('pGh').value.trim(),shots};
+    if(tool==='Excel')item.category='excel';if(tool==='Tableau')item.category='tableau';
+    c.projects=(c.projects||[]).concat(item);
+    await commit(files,c,'Add project: '+title);
+    e.target.reset();pFiles=[];renderP();done('المشروع اتضاف: '+title+' (تحت تاب '+tool+')');
+  }catch(x){fail(x)}b.disabled=false};
+async function loadAdded(){
+  try{const c=await getContent();const box=$('added');const all=[...(c.projects||[]).map(p=>({t:'Project',n:p.title,id:p.id})),...(c.certs||[]).map(p=>({t:'Certificate',n:p.name,id:p.id}))];
+    if(!all.length){box.innerHTML='<div class="hint">لسه مفيش.</div>';return}
+    box.innerHTML='';all.forEach(a=>{const d=document.createElement('div');d.className='item';d.innerHTML='<span></span>';d.firstChild.textContent=(a.t==='Project'?'📊 ':'🎓 ')+a.n;const bt=document.createElement('button');bt.className='btn ghost';bt.textContent='حذف';bt.onclick=async()=>{if(!confirm('تحذف "'+a.n+'" من البورتفوليو؟'))return;bt.disabled=true;try{const cc=await getContent();cc.projects=(cc.projects||[]).filter(x=>x.id!==a.id);cc.certs=(cc.certs||[]).filter(x=>x.id!==a.id);await commit([],cc,'Remove: '+a.n);say('✅ اتحذف. هيختفي من البورتفوليو بعد دقيقة.','ok');loadAdded()}catch(x){fail(x)}};d.appendChild(bt);box.appendChild(d)})
+  }catch(e){}
+}
+boot();
+</script></div></body></html>
