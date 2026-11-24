@@ -23,8 +23,8 @@ const abs=u=>u?new URL(u,document.baseURI).href:u;
 x.projects=(x.projects||[]).map(p=>({...p,shots:(p.shots||[]).map(s=>({...s,src:abs(s.src)}))}));
 x.certs=(x.certs||[]).map(c=>({...c,img:abs(c.img)}));
 x.addPages=x.projects.reduce((a,p)=>a+(parseInt(p.pages)||1),0);
-window.__PF_X=x;
-await import('./index-ext1.js');
+window.__PF_X=x;window.__S=x.site=x.site||{};
+await import('./index-ext2.js');
 </script>
   <link rel="stylesheet" crossorigin href="./index-CV3w9LnD.css">
 </head><body><div id="root"></div></body></html>

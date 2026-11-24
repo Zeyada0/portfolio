@@ -1,0 +1,475 @@
+{
+ "profile": {
+  "name": "Zeyad Ashraf",
+  "title": "Data Analyst",
+  "tagline": "I turn raw numbers into dashboards people can act on.",
+  "about": [
+   "I am a Management Information Systems (MIS) student at Modern Academy, specializing in Data Analytics and Business Intelligence.",
+   "I work with SQL, Microsoft Excel, Power BI, and Tableau to transform raw data into meaningful insights. My focus includes data extraction, cleaning, analysis, data modeling, and developing interactive dashboards that support business reporting and data-driven decision-making.",
+   "I aim to bridge the gap between business requirements and technical solutions through analytical thinking and practical problem-solving."
+  ],
+  "location": "Egypt",
+  "linkedin": "https://www.linkedin.com/in/zeyad-ashraf-065794371",
+  "email": "zeazoashraf00@gmail.com",
+  "whatsapp": "https://wa.me/201025840909",
+  "phone": "+20 102 584 0909",
+  "github": "https://github.com/Zeyada0"
+ },
+ "tools": [
+  {
+   "name": "Microsoft Excel",
+   "sub": "Advanced Data Analysis & Modeling",
+   "icon": "excel",
+   "desc": "Advanced Excel techniques including dynamic array formulas, XLOOKUP and INDEX/MATCH lookups, Power Query transformations, advanced Pivot Tables, and automated reporting workflows.",
+   "chips": [
+    "Power Query",
+    "Dynamic Arrays",
+    "XLOOKUP",
+    "INDEX/MATCH",
+    "Pivot Tables",
+    "Data Modeling"
+   ]
+  },
+  {
+   "name": "SQL",
+   "sub": "Advanced SQL & Database Analysis",
+   "icon": "sql",
+   "desc": "Complex SQL querying across multi-table JOINs, nested subqueries, Common Table Expressions (CTEs), Window Functions and conditional aggregations, with query optimization across PostgreSQL and MySQL.",
+   "chips": [
+    "Advanced JOINs",
+    "CTEs",
+    "Window Functions",
+    "Subqueries",
+    "Query Optimization",
+    "PostgreSQL"
+   ]
+  },
+  {
+   "name": "Python",
+   "sub": "Exploratory Data Analysis & Data Processing",
+   "icon": "python",
+   "desc": "Data cleaning, exploratory analysis and statistical analysis, with data manipulation through Pandas and NumPy and visualization through Matplotlib and Seaborn.",
+   "chips": [
+    "Pandas",
+    "NumPy",
+    "EDA",
+    "Data Cleaning",
+    "Matplotlib",
+    "Seaborn"
+   ]
+  },
+  {
+   "name": "Power BI",
+   "sub": "Advanced Business Intelligence & Data Modeling",
+   "icon": "bi",
+   "desc": "Dimensional data models built on Star Schema, advanced DAX measures and Time Intelligence, optimizing data models for performance and designing interactive BI dashboards.",
+   "chips": [
+    "Advanced DAX",
+    "Star Schema",
+    "Time Intelligence",
+    "Data Modeling",
+    "Power Query",
+    "KPI Dashboards"
+   ]
+  },
+  {
+   "name": "Tableau",
+   "sub": "Advanced Data Visualization & Analytics",
+   "icon": "tableau",
+   "desc": "Interactive dashboards powered by calculated fields, Level of Detail (LOD) expressions, parameters and advanced visualizations, shaped into analytical storytelling.",
+   "chips": [
+    "LOD Expressions",
+    "Calculated Fields",
+    "Parameters",
+    "Interactive Dashboards",
+    "Data Storytelling"
+   ]
+  }
+ ],
+ "projects": [
+  {
+   "id": "sallah",
+   "number": "1",
+   "title": "Sallah Call Center Dashboard",
+   "tool": "Power BI",
+   "pages": "3 pages",
+   "theme": "teal",
+   "tags": [
+    "Power Query",
+    "DAX",
+    "Call Center Analytics",
+    "CSAT",
+    "KPI Tracking"
+   ],
+   "summary": "A call center dashboard in a calm teal style, built around three questions: how are calls going, how is each agent doing, and how close was the forecast. Every page shares the same navigation and a month filter, so a manager can move between views quickly.",
+   "impact": "Helps a call-center manager plan staffing around peak days and spot coaching needs: it exposes a 692K-call forecast overshoot (71.6% accuracy) and agent answer speeds ranging from under 3 to 18 seconds across the 16 agents.",
+   "highlights": [
+    "Call Performance: monthly trends for actual vs forecasted calls, offered vs handled vs abandoned, abandon rate, and calls by day of week.",
+    "Agent Performance: calls abandoned, calls offered vs handled, average speed of answer and top 8 agents by calls handled, for each of the 16 agents.",
+    "Trends & Forecast: forecast accuracy and forecast variance by month, so planning gaps are easy to see."
+   ],
+   "metrics": [
+    {
+     "value": "1.74M",
+     "label": "Total calls"
+    },
+    {
+     "value": "1.32%",
+     "label": "Abandon rate"
+    },
+    {
+     "value": "9 sec",
+     "label": "Avg speed of answer"
+    },
+    {
+     "value": "71.6%",
+     "label": "Forecast accuracy"
+    }
+   ],
+   "linkedin": "https://lnkd.in/p/dSZcrCYn",
+   "github": "https://github.com/Zeyada0/sallah-call-center-dashboard",
+   "imgCount": 4
+  },
+  {
+   "id": "hypermarket",
+   "number": "2",
+   "title": "Hyper Market Sales Dashboard",
+   "tool": "Power BI",
+   "pages": "5 pages",
+   "theme": "navy",
+   "tags": [
+    "DAX",
+    "Power Query",
+    "Star Schema",
+    "Time Intelligence"
+   ],
+   "summary": "An interactive sales analytics suite for a retail chain, covering 2024 to 2025. A designed home page links to four dashboards for sales, customers, products and stores, all in one navy and gold theme with a side menu. Data was prepared with Power Query and measured with DAX.",
+   "impact": "Shows where the chain's sales and 59.67% profit margin come from: Bronze members drive 55.9% of revenue, and the two top-selling stores (13 and 17) also carry the highest return values, so growth and return costs can be managed together.",
+   "highlights": [
+    "Sales: sales and gross profit against last month, trend by month, sales by brand and region, and a customer-level table.",
+    "Customers: customer count, average order value, sales per customer, sales by member card tier and returns by month.",
+    "Products: cost, quantity, average price and returns, with top 8 products and top 6 stores.",
+    "Stores: 24 stores across 109 regions, with store returns, top stores by sales and profit, and a store table."
+   ],
+   "metrics": [
+    {
+     "value": "1.76M",
+     "label": "Total sales"
+    },
+    {
+     "value": "1.05M",
+     "label": "Gross profit"
+    },
+    {
+     "value": "59.67%",
+     "label": "Profit"
+    },
+    {
+     "value": "10.3K",
+     "label": "Customers"
+    }
+   ],
+   "linkedin": "https://lnkd.in/p/d7sH33ex",
+   "github": "https://github.com/Zeyada0/hyper-market-sales-dashboard",
+   "imgCount": 5
+  },
+  {
+   "id": "service",
+   "number": "3",
+   "title": "Service Insight Suite",
+   "tool": "Power BI",
+   "pages": "4 pages",
+   "theme": "gold",
+   "tags": [
+    "SQL",
+    "DAX",
+    "Client Segmentation",
+    "Data Modeling"
+   ],
+   "summary": "A premium analytics suite for a professional services firm, designed in off-white, gold and navy. It follows the business from the top down: executive results first, then clients, then the performance of each service line and department.",
+   "impact": "Gives executives a top-down read of a $195M service business: revenue is evenly spread across all five departments with no single-client dependency (top client is 0.19% of revenue), while only 3.5% of clients are high-value, marking a clear up-sell opportunity.",
+   "highlights": [
+    "Executive Overview: $195M revenue and 217K hours for 2023, with monthly growth, revenue trend, revenue by department and by region.",
+    "Client Analysis: 4.37K clients, top 10 clients by revenue, and client segments by value.",
+    "Service & Department Performance: 9 services, revenue per hour, services delivered by department and a full service breakdown table."
+   ],
+   "metrics": [
+    {
+     "value": "$195M",
+     "label": "Total revenue"
+    },
+    {
+     "value": "217K",
+     "label": "Total hours"
+    },
+    {
+     "value": "4.37K",
+     "label": "Clients"
+    },
+    {
+     "value": "9",
+     "label": "Services"
+    }
+   ],
+   "linkedin": "https://lnkd.in/p/dH_WhSbv",
+   "github": "https://github.com/Zeyada0/service-insight-suite",
+   "imgCount": 4
+  },
+  {
+   "id": "baladna",
+   "number": "4",
+   "title": "Baladna Supply Chain Dashboard",
+   "tool": "Power BI",
+   "pages": "3 pages",
+   "theme": "navy",
+   "tags": [
+    "Power Query",
+    "DAX",
+    "Star Schema",
+    "Data Modeling"
+   ],
+   "summary": "A supply chain report for an Egyptian dairy and food company, built around one question: are we producing what we distribute, and which regions are falling behind target? A designed home page leads to a weekly KPI overview and a region-level data table, all in a dark blue, web-style theme.",
+   "impact": "Gives the company a weekly read on whether production matches distribution: 96.5% target achievement this week, with every region's trend in one table so laggards like Minya and leaders like Luxor stand out immediately.",
+   "highlights": [
+    "Overview: production and distribution this week against last week, target achievement, best and worst performing regions, peak day and average daily production.",
+    "Produced vs distributed by category, plus the top 7 regions by distribution volume against their target.",
+    "Data View: one row per region with target achievement, distribution last week vs this week, supply coverage and week-over-week change.",
+    "Prepared in Power Query: four product tables appended into one production fact table, a referenced distribution fact, and a deduplicated product dimension in a star schema."
+   ],
+   "metrics": [
+    {
+     "value": "4.6M",
+     "label": "Distributed this week"
+    },
+    {
+     "value": "96.5%",
+     "label": "Target achievement"
+    },
+    {
+     "value": "648K",
+     "label": "Avg daily produced"
+    },
+    {
+     "value": "184K",
+     "label": "Produced vs distributed"
+    }
+   ],
+   "linkedin": "",
+   "github": "https://github.com/Zeyada0/baladna-supply-chain-dashboard",
+   "imgCount": 3
+  },
+  {
+   "id": "adidas",
+   "number": "5",
+   "title": "Adidas US Sales Dashboard",
+   "tool": "Power BI",
+   "pages": "2 pages",
+   "theme": "sport",
+   "tags": [
+    "Power Query",
+    "DAX",
+    "Sales Analytics",
+    "Retail Analysis",
+    "Product Analysis"
+   ],
+   "summary": "A two-page view of Adidas sales in the US. The overview page puts the headline numbers first, then shows how sales move across the year, regions, states, products, sales methods and retailers. The product page goes deeper into what earns money and what does not.",
+   "impact": "Shows which products, retailers and sales methods drive the $899.9M in US sales and where margins are strongest (42.3% average), so the business can focus stock and promotions where profit actually comes from.",
+   "highlights": [
+    "Overview: sales trend by month, sales by region, top 6 states, sales method split and top 6 retailers.",
+    "Product Analysis: profit, units sold and profit margin by product, with the best seller (Men's Street Footwear, $208.8M) called out.",
+    "A full product table with sales, operating profit, units, margin and average price, so every chart can be checked against the numbers."
+   ],
+   "metrics": [
+    {
+     "value": "$899.9M",
+     "label": "Total sales"
+    },
+    {
+     "value": "$332M",
+     "label": "Total profit"
+    },
+    {
+     "value": "2M",
+     "label": "Units sold"
+    },
+    {
+     "value": "42.3%",
+     "label": "Avg margin"
+    }
+   ],
+   "linkedin": "https://lnkd.in/p/d9rQJvwq",
+   "github": "https://github.com/Zeyada0/adidas-sales-dashboard",
+   "imgCount": 2
+  },
+  {
+   "id": "misu",
+   "number": "1",
+   "title": "MISU Sales Dashboard",
+   "tool": "Excel",
+   "pages": "1 page",
+   "theme": "navy",
+   "category": "excel",
+   "tags": [
+    "Pivot Tables",
+    "Slicers",
+    "Sales Analytics",
+    "Retail Analysis",
+    "Data Cleaning"
+   ],
+   "summary": "A one-page Excel dashboard for MISU, an Egyptian furniture store selling through online platforms. A KPI row heads the page, then breakdowns of sales by platform, area, customer type, payment method and delivery status, plus a top-5 products chart.",
+   "impact": "Shows that one platform (Homzmart) brings about 60% of delivered sales and beds about 68%, while 1 in 5 orders never reaches the customer, so the store knows where to focus its catalog and where delivery needs work.",
+   "highlights": [
+    "Built from a raw Arabic orders table: 126 orders cleaned and unified, then summarized with pivot tables behind every chart.",
+    "Slicers filter the whole page by platform, product category and governorate, so any slice answers in one click.",
+    "Delivery tracked next to sales: 102 orders delivered, 24 failed or returned."
+   ],
+   "metrics": [
+    {
+     "value": "EGP 1.11M",
+     "label": "Total sales"
+    },
+    {
+     "value": "126",
+     "label": "Orders"
+    },
+    {
+     "value": "EGP 10.9K",
+     "label": "Avg order value"
+    },
+    {
+     "value": "81%",
+     "label": "Delivery success"
+    }
+   ],
+   "linkedin": "https://lnkd.in/p/dwzuZzYh",
+   "github": "",
+   "imgCount": 1
+  },
+  {
+   "id": "nexus",
+   "number": "2",
+   "title": "Nexus Sales Dashboard",
+   "tool": "Excel",
+   "pages": "1 page",
+   "theme": "navy",
+   "category": "excel",
+   "tags": [
+    "Pivot Tables",
+    "Slicers",
+    "Sales Analytics",
+    "KPI Tracking",
+    "Data Cleaning"
+   ],
+   "summary": "A one-page Excel sales dashboard. A KPI row heads the page, then sales over time, by segment, city, state and category, all filtered by year, category and region slicers.",
+   "impact": "Shows sales climbing from 484K to 733K over the four years in the data, with Consumer as the biggest segment and Technology the leading category, so effort goes where sales actually come from.",
+   "highlights": [
+    "KPI row plus five breakdowns: sales trend, segment mix, top cities, top states and category totals.",
+    "Year, category and region slicers slice the whole page in one click.",
+    "Rankings call out the leaders: New York (256K) among cities, California (458K) among states, and Technology among categories."
+   ],
+   "metrics": [
+    {
+     "value": "2.3M",
+     "label": "Total sales"
+    },
+    {
+     "value": "286.4K",
+     "label": "Total profit"
+    },
+    {
+     "value": "37.9K",
+     "label": "Units sold"
+    },
+    {
+     "value": "16%",
+     "label": "Avg discount"
+    }
+   ],
+   "linkedin": "https://lnkd.in/p/gd72t8Sz",
+   "github": "",
+   "imgCount": 1
+  },
+  {
+   "id": "tableau-sales",
+   "number": "1",
+   "title": "Sales Dashboard",
+   "tool": "Tableau",
+   "pages": "1 page",
+   "theme": "gold",
+   "category": "tableau",
+   "tags": [
+    "Interactive Dashboards",
+    "Sales Analytics",
+    "KPI Tracking",
+    "Map Visualization",
+    "Customer Analysis"
+   ],
+   "summary": "A one-page Tableau sales dashboard. Four KPI cards head the page, then sales by country on a map, sales over time, sales by product line, deal size mix and the top 7 customers. Country, product line, deal size and year filters sit on the left.",
+   "impact": "Shows that Classic Cars lead with 3.92M (about 39% of sales), that Medium deals make up 60.7%, and that sales jump above 1M near the end of 2003 and 2004, so a sales team can see where to focus and when demand peaks.",
+   "highlights": [
+    "KPI row: total sales, quantity sold, average order value and unique orders.",
+    "Five views: sales by country map, sales trend over time, product lines, deal sizes and top 7 customers.",
+    "Country, product line, deal size and year filters let you narrow the page."
+   ],
+   "metrics": [
+    {
+     "value": "$10.03M",
+     "label": "Total sales"
+    },
+    {
+     "value": "99.1K",
+     "label": "Quantity sold"
+    },
+    {
+     "value": "$32.7K",
+     "label": "Avg order value"
+    },
+    {
+     "value": "307",
+     "label": "Unique orders"
+    }
+   ],
+   "linkedin": "https://lnkd.in/p/dEv_nTTZ",
+   "github": "",
+   "imgCount": 1
+  }
+ ],
+ "certs": [
+  {
+   "id": "SQL for Data Analysis",
+   "name": "SQL for Data Analysis",
+   "issuer": "Mazen Analytics",
+   "issued": "Sep 2026",
+   "verify": "https://share.google/R2m9gIRKSI2BBUTb2"
+  },
+  {
+   "id": "Advanced Power BI Course",
+   "name": "Advanced Power BI Course",
+   "note": "Diploma of Professional Achievement",
+   "issuer": "Mazen Analytics",
+   "issued": "Nov 2026",
+   "verify": "https://share.google/VQltRorb0MN433Bp1"
+  },
+  {
+   "id": "Excel for Data Analysis",
+   "name": "Excel for Data Analysis",
+   "issuer": "Mazen Analytics",
+   "issued": "Jul 2026",
+   "verify": "https://share.google/eyJhFKIoVCX3WbB1b"
+  },
+  {
+   "id": "Tableau",
+   "name": "Tableau",
+   "issuer": "Mazen Analytics",
+   "issued": "Jul 2026",
+   "verify": "https://share.google/nKVAnPhaKaU8Zs7EB"
+  },
+  {
+   "id": "Business Fundamentals",
+   "name": "Business Fundamentals",
+   "issuer": "Mazen Analytics",
+   "issued": "Jul 2026",
+   "verify": "https://share.google/tou3Sobe3UrDqanfo"
+  }
+ ]
+}

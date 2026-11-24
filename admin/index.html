@@ -39,6 +39,15 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--gold);border-col
 .item{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
 .item:last-child{border:0}
 .item span{font-size:14px}
+
+.overlay{position:fixed;inset:0;background:rgba(5,12,24,.82);z-index:50;overflow:auto;padding:18px}
+.overlay .box{max-width:640px;margin:0 auto;background:#12294a;border:1px solid var(--line);border-radius:18px;padding:18px}
+.row2{display:flex;gap:6px;flex-wrap:wrap}
+.item b{font-weight:600}
+.item .row2 .btn{padding:6px 10px;font-size:13px}
+.sec{margin:6px 0 10px;color:var(--gold2);font-weight:700}
+.tg{display:flex;gap:8px;align-items:center;margin:10px 0}.tg input{width:auto}
+.dim{opacity:.5}
 a{color:var(--gold2)}
 ol{padding-inline-start:20px;line-height:2;font-size:15px}
 code{background:rgba(255,255,255,.1);padding:1px 6px;border-radius:6px;direction:ltr;unicode-bidi:embed}
@@ -61,7 +70,9 @@ code{background:rgba(255,255,255,.1);padding:1px 6px;border-radius:6px;direction
 </div>
 
 <div id="app" class="hidden">
-  <div class="card">
+  <div class="seg" style="margin-bottom:16px"><button id="tabAdd" class="on">➕ إضافة</button><button id="tabMg">✏️ تعديل الموقع</button></div>
+  <div id="mg" class="hidden"></div>
+  <div class="card" id="typeCard">
     <label style="margin-top:0">نوع العرض</label>
     <div class="seg"><button id="tCert">🎓 Certificate</button><button id="tProj">📊 Project</button></div>
   </div>
@@ -199,5 +210,93 @@ async function loadAdded(){
     box.innerHTML='';all.forEach(a=>{const d=document.createElement('div');d.className='item';d.innerHTML='<span></span>';d.firstChild.textContent=(a.t==='Project'?'📊 ':'🎓 ')+a.n;const bt=document.createElement('button');bt.className='btn ghost';bt.textContent='حذف';bt.onclick=async()=>{if(!confirm('تحذف "'+a.n+'" من البورتفوليو؟'))return;bt.disabled=true;try{const cc=await getContent();cc.projects=(cc.projects||[]).filter(x=>x.id!==a.id);cc.certs=(cc.certs||[]).filter(x=>x.id!==a.id);await commit([],cc,'Remove: '+a.n);say('✅ اتحذف. هيختفي من البورتفوليو بعد دقيقة.','ok');loadAdded()}catch(x){fail(x)}};d.appendChild(bt);box.appendChild(d)})
   }catch(e){}
 }
+
+// ================= manage tab =================
+let BASE=null;
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function tab(t){const add=t==='add';$('tabAdd').classList.toggle('on',add);$('tabMg').classList.toggle('on',!add);
+  show('mg',!add);show('typeCard',add);show('manage',add);if(add){show('fCert',kind==='c');show('fProj',kind==='p')}else{show('fCert',false);show('fProj',false);renderMg()}}
+$('tabAdd').onclick=()=>tab('add');$('tabMg').onclick=()=>tab('mg');
+async function saveSite(fn,msg){const c=await getContent();c.site=c.site||{};c.site.edits=c.site.edits||{};c.site.hidden=c.site.hidden||[];c.site.order=c.site.order||{};fn(c);await commit([],c,msg)}
+function ask(title,fields,vals){return new Promise(res=>{
+  const o=document.createElement('div');o.className='overlay';const b=document.createElement('div');b.className='box';o.appendChild(b);
+  let html='<b>'+esc(title)+'</b>';
+  fields.forEach((f,i)=>{const v=vals[f.k];let s=f.t==='lines'?(v||[]).join('\n'):f.t==='csv'?(v||[]).join(', '):f.t==='paras'?(v||[]).join('\n\n'):f.t==='kpis'?(v||[]).map(m=>m.value+' | '+m.label).join('\n'):(v==null?'':v);
+    html+='<label>'+esc(f.l)+(f.h?' <small>'+esc(f.h)+'</small>':'')+'</label>';
+    if(f.t==='area'||f.t==='lines'||f.t==='paras'||f.t==='kpis')html+='<textarea data-i="'+i+'" style="min-height:'+(f.t==='paras'?220:90)+'px">'+esc(s)+'</textarea>';
+    else if(f.t==='select')html+='<select data-i="'+i+'">'+f.o.map(x=>'<option'+(String(x)===String(v)?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select>';
+    else html+='<input type="text" data-i="'+i+'" value="'+esc(s)+'">'});
+  html+='<div class="row" style="margin-top:16px"><button class="btn primary" style="margin:0" id="okB">حفظ</button><button class="btn" id="noB">إلغاء</button></div>';
+  b.innerHTML=html;document.body.appendChild(o);
+  b.querySelector('#noB').onclick=()=>{o.remove();res(null)};
+  b.querySelector('#okB').onclick=()=>{const out={};fields.forEach((f,i)=>{const e=b.querySelector('[data-i="'+i+'"]');let v=e.value;
+    if(f.t==='lines')v=v.split('\n').map(x=>x.trim()).filter(Boolean);
+    else if(f.t==='csv')v=v.split(/[,،]/).map(x=>x.trim()).filter(Boolean);
+    else if(f.t==='paras')v=v.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+    else if(f.t==='kpis')v=v.split('\n').map(x=>x.split('|').map(y=>y.trim())).filter(a=>a[0]&&a[1]).map(a=>({value:a[0],label:a[1]}));
+    else v=v.trim();out[f.k]=v});o.remove();res(out)};
+})}
+function eff(list,order,ed){const idx=p=>{const i=(order||[]).indexOf(p.id);return i<0?1e6:i};return list.map((p,i)=>[{...p,...(ed[p.id]||{})},i]).sort((a,b)=>idx(a[0])-idx(b[0])||a[1]-b[1]).map(x=>x[0])}
+const grp=p=>p.tool||'Power BI';
+async function renderMg(){
+  const box=$('mg');box.innerHTML='<div class="status">⏳ بحمّل...</div>';
+  try{
+    if(!BASE)BASE=await (await fetch('./base.json?'+Date.now(),{cache:'no-store'})).json();
+    const c=await getContent();const S=c.site||{};const ed=S.edits||{},hid=S.hidden||[];
+    const prof={...BASE.profile,...(S.profile||{})};
+    const tools=S.tools&&S.tools.length?S.tools:BASE.tools;
+    const projs=eff([...BASE.projects,...(c.projects||[])],(S.order||{}).projects,ed);
+    const certs=eff([...BASE.certs,...(c.certs||[])],(S.order||{}).certs,ed);
+    box.innerHTML='';
+    const card=(t)=>{const d=document.createElement('div');d.className='card';d.innerHTML='<div class="sec">'+t+'</div>';box.appendChild(d);return d};
+    const btn=(txt,fn,cls)=>{const b=document.createElement('button');b.className='btn ghost '+(cls||'');b.textContent=txt;b.onclick=async()=>{b.disabled=true;try{await fn();say('✅ اتحفظ. هيظهر على الموقع بعد دقيقة أو اتنين.','ok');show('status',true);renderMg()}catch(e){fail(e);show('status',true);b.disabled=false}};return b};
+    // profile
+    let d=card('👤 البيانات الأساسية والـ About');
+    d.appendChild(btn('تعديل',async()=>{const v=await ask('البيانات الأساسية',[{k:'name',l:'الاسم'},{k:'title',l:'المسمى الوظيفي'},{k:'tagline',l:'الجملة تحت الاسم'},{k:'about',l:'نص About',h:'سطر فاضي بين كل فقرة',t:'paras'},{k:'location',l:'البلد'},{k:'email',l:'الإيميل'},{k:'phone',l:'الرقم'},{k:'whatsapp',l:'لينك واتساب'},{k:'linkedin',l:'لينك LinkedIn'},{k:'github',l:'لينك GitHub'}],prof);if(!v)throw new Error('تم الإلغاء');await saveSite(c=>{c.site.profile=v},'Edit profile')}));
+    // hero badges + learning + counters
+    d=card('🏷️ الـ Open to work وكارت Learning والعدادات');
+    d.appendChild(btn('تعديل',async()=>{const L=S.learning||{},C=S.counters||{};const v=await ask('البادج والعدادات',[
+      {k:'otw',l:'بادج Open to work',t:'select',o:['ظاهر','مخفي']},{k:'otwText',l:'نص البادج',h:'اتركه فاضي = Open to work'},
+      {k:'lhide',l:'كارت "Currently learning"',t:'select',o:['ظاهر','مخفي']},{k:'ltitle',l:'عنوان الكارت',h:'فاضي = Currently learning: Python'},{k:'lsub',l:'السطر الصغير تحته',h:'فاضي = الافتراضي'},
+      {k:'cd',l:'عداد Dashboards',h:'فاضي = تلقائي (عدد الصفحات)'},{k:'cp',l:'عداد Projects',h:'فاضي = تلقائي'}],
+      {otw:S.otw===false?'مخفي':'ظاهر',otwText:S.otwText||'',lhide:L.hide?'مخفي':'ظاهر',ltitle:L.title||'',lsub:L.sub||'',cd:C.dashboards||'',cp:C.projects||''});
+      if(!v)throw new Error('تم الإلغاء');
+      await saveSite(c=>{c.site.otw=v.otw!=='مخفي';c.site.otwText=v.otwText;c.site.learning={hide:v.lhide==='مخفي',title:v.ltitle,sub:v.lsub};c.site.counters={dashboards:parseInt(v.cd)||0,projects:parseInt(v.cp)||0}},'Edit badges and counters')}));
+    // CV
+    d=card('📄 الـ CV (Download CV)');
+    d.insertAdjacentHTML('beforeend','<div class="hint">اختار ملف PDF جديد، وبيستبدل الـ CV اللي بيتحمل من الموقع (نفس اللينك).</div><input type="file" accept="application/pdf" id="cvf">');
+    d.appendChild(btn('رفع الـ CV',async()=>{const f=$('cvf').files[0];if(!f)throw new Error('اختار ملف PDF الأول');if(f.size>20e6)throw new Error('الملف كبير');const b64=await new Promise((r,j)=>{const fr=new FileReader();fr.onload=()=>r(fr.result.split(',')[1]);fr.onerror=j;fr.readAsDataURL(f)});const c=await getContent();await commit([{path:'Zeyad_Ashraf_CV.pdf',b64}],c,'Update CV')}));
+    // skills
+    d=card('🧰 كروت المهارات (Technical Expertise)');
+    const tf=[{k:'name',l:'الاسم'},{k:'sub',l:'العنوان الفرعي'},{k:'icon',l:'الأيقونة',t:'select',o:['excel','sql','python','bi','tableau']},{k:'desc',l:'الوصف',t:'area'},{k:'chips',l:'المهارات الصغيرة',h:'افصل بفاصلة',t:'csv'}];
+    const saveTools=(arr)=>saveSite(c=>{c.site.tools=arr},'Edit skills');
+    tools.forEach((t,i)=>{const r=document.createElement('div');r.className='item';r.innerHTML='<span>'+esc(t.name)+'</span>';const g=document.createElement('div');g.className='row2';
+      g.append(btn('↑',()=>{if(i===0)throw new Error('أول واحد');const a=tools.slice();[a[i-1],a[i]]=[a[i],a[i-1]];return saveTools(a)}),btn('↓',()=>{if(i===tools.length-1)throw new Error('آخر واحد');const a=tools.slice();[a[i+1],a[i]]=[a[i],a[i+1]];return saveTools(a)}),
+        btn('تعديل',async()=>{const v=await ask('تعديل '+t.name,tf,t);if(!v)throw new Error('تم الإلغاء');const a=tools.slice();a[i]={...t,...v};return saveTools(a)}),
+        btn('حذف',async()=>{if(!confirm('تحذف '+t.name+'؟'))throw new Error('تم الإلغاء');return saveTools(tools.filter((_,j)=>j!==i))}));r.appendChild(g);d.appendChild(r)});
+    d.appendChild(btn('➕ كارت جديد',async()=>{const v=await ask('كارت مهارة جديد',tf,{icon:'bi'});if(!v||!v.name)throw new Error('تم الإلغاء');return saveTools([...tools,v])}));
+    // projects
+    d=card('📊 المشاريع (ترتيب / تعديل / إخفاء)');
+    const moveIn=(list,i,dir,key)=>{const g=x=>key==='p'?grp(x):'c';let j=i+dir;while(j>=0&&j<list.length&&g(list[j])!==g(list[i]))j+=dir;if(j<0||j>=list.length)throw new Error('مفيش مكان تتحرك ليه');const ids=list.map(x=>x.id);[ids[i],ids[j]]=[ids[j],ids[i]];return ids};
+    const pf=[{k:'title',l:'الاسم'},{k:'tool',l:'الأداة',t:'select',o:['Power BI','Excel','Tableau']},{k:'pages',l:'الصفحات',h:'مثال: 3 pages'},{k:'summary',l:'الوصف',t:'area'},{k:'highlights',l:'Insights',h:'كل سطر نقطة',t:'lines'},{k:'impact',l:'اللي استفدناه (IMPACT)',t:'area'},{k:'tags',l:'المهارات',h:'افصل بفاصلة',t:'csv'},{k:'metrics',l:'الأرقام الرئيسية',h:'كل سطر: القيمة | الاسم',t:'kpis'},{k:'linkedin',l:'لينك LinkedIn'},{k:'github',l:'لينك GitHub'},{k:'theme',l:'اللون',t:'select',o:['navy','gold','teal','sport']}];
+    ['Power BI','Excel','Tableau'].forEach(gn=>{
+      const sub=document.createElement('div');sub.className='hint';sub.textContent=gn;d.appendChild(sub);
+      projs.forEach((p,i)=>{if(grp(p)!==gn)return;const isHid=hid.includes(p.id);const r=document.createElement('div');r.className='item'+(isHid?' dim':'');r.innerHTML='<span>'+esc(p.title)+(isHid?' (مخفي)':'')+'</span>';const g=document.createElement('div');g.className='row2';
+        g.append(btn('↑',()=>{const ids=moveIn(projs,i,-1,'p');return saveSite(c=>{c.site.order.projects=ids},'Reorder projects')}),btn('↓',()=>{const ids=moveIn(projs,i,1,'p');return saveSite(c=>{c.site.order.projects=ids},'Reorder projects')}),
+          btn('تعديل',async()=>{const v=await ask('تعديل '+p.title,pf,{...p,theme:p.theme||'navy'});if(!v)throw new Error('تم الإلغاء');return saveSite(c=>{c.site.edits[p.id]={...(c.site.edits[p.id]||{}),...v}},'Edit project '+p.title)}),
+          btn(isHid?'إظهار':'إخفاء',()=>saveSite(c=>{c.site.hidden=isHid?c.site.hidden.filter(x=>x!==p.id):[...c.site.hidden,p.id]},(isHid?'Show ':'Hide ')+p.title)));
+        r.appendChild(g);d.appendChild(r)})});
+    // certs
+    d=card('🎓 الشهادات (ترتيب / تعديل / إخفاء)');
+    const cf=[{k:'name',l:'الاسم'},{k:'issuer',l:'الجهة'},{k:'issued',l:'التاريخ',h:'مثال: Nov 2026'},{k:'verify',l:'لينك التحقق'},{k:'note',l:'ملاحظة (بتخلي الشهادة Featured)'}];
+    certs.forEach((p,i)=>{const isHid=hid.includes(p.id);const r=document.createElement('div');r.className='item'+(isHid?' dim':'');r.innerHTML='<span>'+esc(p.name)+(isHid?' (مخفي)':'')+'</span>';const g=document.createElement('div');g.className='row2';
+      g.append(btn('↑',()=>{const ids=moveIn(certs,i,-1,'c');return saveSite(c=>{c.site.order.certs=ids},'Reorder certificates')}),btn('↓',()=>{const ids=moveIn(certs,i,1,'c');return saveSite(c=>{c.site.order.certs=ids},'Reorder certificates')}),
+        btn('تعديل',async()=>{const v=await ask('تعديل '+p.name,cf,p);if(!v)throw new Error('تم الإلغاء');return saveSite(c=>{c.site.edits[p.id]={...(c.site.edits[p.id]||{}),...v}},'Edit certificate '+p.name)}),
+        btn(isHid?'إظهار':'إخفاء',()=>saveSite(c=>{c.site.hidden=isHid?c.site.hidden.filter(x=>x!==p.id):[...c.site.hidden,p.id]},'Toggle certificate '+p.name)));
+      r.appendChild(g);d.appendChild(r)});
+    const hint=document.createElement('div');hint.className='hint';hint.textContent='ملاحظة: النصوص اللي بتعدلها بتظهر زي ما كتبتها حتى في وضع العربي (مفيش ترجمة تلقائية).';box.appendChild(hint);
+  }catch(e){box.innerHTML='<div class="status err">❌ '+esc(e.message||e)+'</div>'}
+}
+
 boot();
 </script></div></body></html>
