@@ -1,53 +1,5 @@
 {
-  "projects": [
-    {
-      "id": "p-teast-bru23o",
-      "title": "Teast",
-      "tool": "Power BI",
-      "pages": "2 pages",
-      "theme": "navy",
-      "tags": [
-        "DAX",
-        "Power Query",
-        "Data Modeling"
-      ],
-      "summary": "Test of this measures in the morning and order it for you",
-      "highlights": [
-        "Important"
-      ],
-      "impact": "nothing",
-      "metrics": [
-        {
-          "value": "90M",
-          "label": "Sales"
-        },
-        {
-          "value": "20M",
-          "label": "Lol"
-        },
-        {
-          "value": "50M",
-          "label": "ty"
-        },
-        {
-          "value": "10",
-          "label": "Op"
-        }
-      ],
-      "linkedin": "",
-      "github": "",
-      "shots": [
-        {
-          "src": "uploads/teast-1-tt3ptd.jpg",
-          "label": "Op"
-        },
-        {
-          "src": "uploads/teast-2-r7xjlr.jpg",
-          "label": "Gg"
-        }
-      ]
-    }
-  ],
+  "projects": [],
   "certs": [],
   "site": {
     "ar": {
