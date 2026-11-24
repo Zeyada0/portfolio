@@ -279,6 +279,10 @@ async function renderMg(){
       {otw:S.otw===false?'مخفي':'ظاهر',otwText:S.otwText||'',lhide:L.hide?'مخفي':'ظاهر',licon:L.icon||'python',ltitle:L.title||'Currently learning: Python',lsub:L.sub||'The certificate will be added here once earned.',cd:C.dashboards||'',cp:C.projects||''});
       if(!v)throw new Error('تم الإلغاء');
       await saveSite(c=>{applyAr(c,BF,{...v,otwText:v.otwText||'Open to work',ltitle:v.ltitle||'Currently learning: Python',lsub:v.lsub||'The certificate will be added here once earned.'});c.site.otw=v.otw!=='مخفي';c.site.otwText=v.otwText;c.site.learning={hide:v.lhide==='مخفي',icon:v.licon,title:v.ltitle,sub:v.lsub};c.site.counters={dashboards:parseInt(v.cd)||0,projects:parseInt(v.cp)||0}},'Edit badges and counters')}));
+    // typing words
+    d=card('⌨️ الكلام المتحرك تحت Open to work');
+    const TF=[{k:'words',l:'الكلمات',h:'كل سطر كلمة، بتتكتب واحدة ورا التانية',t:'lines',ar:true}];
+    d.appendChild(btn('تعديل',async()=>{const cur=(S.typing&&S.typing.length)?S.typing:['Data Analyst','Excel','SQL','Python','Power BI','Tableau'];const v=await ask('الكلمات المتحركة',TF,{words:cur});if(!v||!v.words.length)throw new Error('لازم كلمة واحدة على الأقل');return saveSite(c=>{applyAr(c,TF,v);c.site.typing=v.words},'Edit typing words')}));
     // hero photo
     d=card('🖼 صورة البروفايل (اللي في شاشة الافتتاح)');
     d.insertAdjacentHTML('beforeend','<input type="file" accept="image/*" id="phf"><div id="phbox" class="hidden"><canvas id="phc" width="360" height="360" style="width:180px;height:180px;border-radius:50%;border:2px solid var(--gold);display:block;margin:12px 0"></canvas><label>تكبير</label><input type="range" id="phz" min="1" max="3" step="0.02" value="1"><label>يمين / شمال</label><input type="range" id="phx" min="-1" max="1" step="0.02" value="0"><label>فوق / تحت</label><input type="range" id="phy" min="-1" max="1" step="0.02" value="0"></div><div class="hint">الصورة بتتقص دايرة من النص. اختار الصورة، اظبط التكبير والمكان، وبعدين ادوس "حفظ الصورة".</div>');
