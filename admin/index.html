@@ -98,6 +98,7 @@ code{background:rgba(255,255,255,.1);padding:1px 6px;border-radius:6px;direction
     <input type="file" id="pImgs" accept="image/*" multiple>
     <div class="thumbs" id="pPrev"></div>
     <label>المهارات المستخدمة <small>افصل بينهم بفاصلة</small></label><input type="text" id="pSkills" required placeholder="DAX, Power Query, Data Modeling">
+    <label>شرح مهارات جديدة <small>اختياري. لو كتبت مهارة جديدة فوق، اكتب شرحها هنا، سطر لكل مهارة: Skill = English explanation | الشرح بالعربي (العربي اختياري)</small></label><textarea id="pTips" style="min-height:70px" placeholder="Power Pivot = Data models inside Excel. | نماذج بيانات جوه إكسل."></textarea>
     <label>وصف قصير <small>Short description (اختياري)</small></label><textarea id="pDesc" style="min-height:70px"></textarea>
     <label>🇪🇬 الوصف بالعربي <small>اختياري، بيظهر لما الموقع يبقى عربي</small></label><textarea id="pDescAr" dir="rtl" style="min-height:70px"></textarea>
     <label>الـ Insights <small>كل سطر نقطة</small></label><textarea id="pInsights" required placeholder="Classic Cars lead with 39% of sales&#10;Medium deals are 60% of all orders"></textarea>
@@ -204,6 +205,7 @@ $('fProj').onsubmit=async e=>{e.preventDefault();const b=e.submitter;
       linkedin:$('pLi').value.trim(),github:$('pGh').value.trim(),shots};
     if(tool==='Excel')item.category='excel';if(tool==='Tableau')item.category='tableau';
     c.projects=(c.projects||[]).concat(item);
+    c.site=c.site||{};c.site.tips=c.site.tips||{};c.site.ar=c.site.ar||{};$('pTips').value.split('\n').map(x=>x.trim()).filter(Boolean).forEach(l=>{const m=l.match(/^(.+?)\s*=\s*(.+?)(?:\s*\|\s*(.+))?$/);if(m){c.site.tips[m[1].trim()]=m[2].trim();if(m[3])c.site.ar[m[2].trim()]=m[3].trim()}});
     c.site=c.site||{};const ad=c.site.ar=c.site.ar||{};const pr=(en,ar)=>{if(en&&ar)ad[en]=ar};pr(item.summary,$('pDescAr').value.trim());pr(item.impact,$('pLearnedAr').value.trim());const al=lines($('pInsightsAr').value);item.highlights.forEach((x,i)=>pr(x,al[i]));
     await commit(files,c,'Add project: '+title);
     e.target.reset();pFiles=[];renderP();done('المشروع اتضاف: '+title+' (تحت تاب '+tool+')');
@@ -290,6 +292,15 @@ async function renderMg(){
         btn('تعديل',async()=>{const v=await ask('تعديل '+t.name,tf,t);if(!v)throw new Error('تم الإلغاء');const a=tools.slice();a[i]={...t,...cleanV(v)};return saveTools(a,v)}),
         btn('حذف',async()=>{if(!confirm('تحذف '+t.name+'؟'))throw new Error('تم الإلغاء');return saveTools(tools.filter((_,j)=>j!==i))}));r.appendChild(g);d.appendChild(r)});
     d.appendChild(btn('➕ كارت جديد',async()=>{const v=await ask('كارت مهارة جديد',tf,{icon:'bi'});if(!v||!v.name)throw new Error('تم الإلغاء');return saveTools([...tools,cleanV(v)],v)}));
+    // skill explainers
+    d=card('💡 شرح المهارات (اللي بيظهر لما تدوس على Skill)');
+    const allTips={...BASE.tips,...(S.tips||{})};const tpf=[{k:'name',l:'اسم المهارة',h:'بالظبط زي ما بتكتبها في المشروع'},{k:'tip',l:'الشرح بالإنجليزي',t:'area',ar:true}];
+    const saveTip=(name,v,old)=>saveSite(c=>{const tp=c.site.tips=c.site.tips||{};if(old&&old!==name)delete tp[old];tp[name]=v.tip;applyAr(c,[{k:'tip',t:'area',ar:true}],v)},'Skill explainer '+name);
+    Object.keys(allTips).forEach(k=>{const custom=!(k in BASE.tips);const r=document.createElement('div');r.className='item';r.innerHTML='<span>'+esc(k)+(custom?' ★':'')+'</span>';const g=document.createElement('div');g.className='row2';
+      g.append(btn('تعديل',async()=>{const v=await ask('شرح '+k,[tpf[1]],{tip:allTips[k]});if(!v)throw new Error('تم الإلغاء');return saveTip(k,v)}));
+      if(custom)g.append(btn('🗑 حذف',async()=>{if(!confirm('تحذف شرح '+k+'؟'))throw new Error('تم الإلغاء');return saveSite(c=>{delete c.site.tips[k]},'Delete skill explainer '+k)}));
+      r.appendChild(g);d.appendChild(r)});
+    d.appendChild(btn('➕ مهارة جديدة',async()=>{const v=await ask('مهارة جديدة',tpf,{});if(!v||!v.name||!v.tip)throw new Error('لازم اسم وشرح');return saveTip(v.name,v)}));
     // projects
     d=card('📊 المشاريع (ترتيب / تعديل / إخفاء)');
     const delItem=(id,name)=>saveSite(c=>{c.projects=(c.projects||[]).filter(x=>x.id!==id);c.certs=(c.certs||[]).filter(x=>x.id!==id);c.site.hidden=c.site.hidden.filter(x=>x!==id);if(BASE.projects.some(x=>x.id===id)||BASE.certs.some(x=>x.id===id))c.site.deleted=[...(c.site.deleted||[]),id];delete c.site.edits[id];['projects','certs'].forEach(k=>{if(c.site.order[k])c.site.order[k]=c.site.order[k].filter(x=>x!==id)})},'Delete '+name);

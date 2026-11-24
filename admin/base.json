@@ -640,5 +640,27 @@
   "Produced vs distributed": "الإنتاج مقابل التوزيع",
   "Data View": "عرض البيانات",
   "All rights reserved": "جميع الحقوق محفوظة"
+ },
+ "tips": {
+  "Power BI": "Interactive dashboards that turn data into clear business views.",
+  "Power Query": "The data preparation layer: clean, reshape and combine data before analysis.",
+  "DAX": "Measures and calculations behind dashboard KPIs and comparisons.",
+  "SQL": "Querying and preparing data in a database before reporting.",
+  "Sales Analytics": "Explore sales, profit and trends to understand business performance.",
+  "Retail Analysis": "Compare retail performance across locations, retailers and sales channels.",
+  "Product Analysis": "Compare products by sales, profit, units and margin.",
+  "Call Center Analytics": "Explore call volumes, service performance and agent results.",
+  "CSAT": "Customer satisfaction: a lens for understanding the customer experience.",
+  "KPI Tracking": "Keep key performance indicators visible and easy to compare.",
+  "Star Schema": "A data model that connects a central fact table to descriptive dimensions.",
+  "Time Intelligence": "Compare results across time periods and follow changes in performance.",
+  "Client Segmentation": "Group clients by shared traits or value to make patterns easier to see.",
+  "Data Modeling": "Connect tables and define relationships for consistent analysis.",
+  "Pivot Tables": "Summarizing raw rows into totals and breakdowns without formulas.",
+  "Slicers": "One-click filters that slice every chart on the page.",
+  "Data Cleaning": "Fixing and unifying raw data before analysis.",
+  "Interactive Dashboards": "Dashboards with filters and clickable views that react as you explore.",
+  "Map Visualization": "Show where sales happen by shading countries on a map.",
+  "Customer Analysis": "Rank customers by sales to see who matters most."
  }
 }
